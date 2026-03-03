@@ -1,0 +1,617 @@
+/**
+ * Kimbia Eldoret - Final JavaScript File
+ * Professional running club website with performance optimizations
+ */
+
+// ============================================
+// GLOBAL VARIABLES
+// ============================================
+let totalRunners = 200; // Starting value for runners counter
+
+// ============================================
+// WAIT FOR DOM TO LOAD COMPLETELY
+// ============================================
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize all functionality
+    initMobileMenu();
+    initSmoothScrolling();
+    initScrollReveal();
+    initStatsCounter();
+    initScrollToTop();
+    initImageCarousel();
+    initCalendarMobileView();
+    initFaqAccordion();
+    updateWeeksCounter(); // Calculate weeks from Jan 10, 2026
+});
+
+// ============================================
+// MOBILE MENU LOGIC - Optimized for performance
+// ============================================
+function initMobileMenu() {
+    const mobileToggle = document.querySelector('.mobile-toggle');
+    const navMenu = document.querySelector('.nav-menu');
+    const navLinks = document.querySelectorAll('.nav-menu a');
+    
+    // Only run if elements exist
+    if (!mobileToggle || !navMenu) return;
+    
+    // Function to close mobile menu
+    const closeMobileMenu = () => {
+        navMenu.classList.remove('active');
+        mobileToggle.textContent = '☰';
+        document.body.style.overflow = ''; // Restore scroll
+        
+        // Also close any open dropdowns
+        document.querySelectorAll('.dropdown.active').forEach(dropdown => {
+            dropdown.classList.remove('active');
+        });
+    };
+    
+    // Toggle menu when hamburger icon is clicked
+    mobileToggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        navMenu.classList.toggle('active');
+        
+        // Change hamburger icon text based on menu state
+        mobileToggle.textContent = navMenu.classList.contains('active') ? '✕' : '☰';
+        
+        // Prevent body scroll when menu is open
+        document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+    });
+    
+    // Close menu when ANY nav link is clicked (including dropdown links)
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            // Only close the menu if the link is NOT a dropdown toggle
+            if (!this.parentElement.classList.contains('dropdown')) {
+                closeMobileMenu();
+            }
+        });
+    });
+    
+    // Close menu when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!navMenu.contains(event.target) && !mobileToggle.contains(event.target)) {
+            closeMobileMenu();
+        }
+    });
+    
+    // Handle dropdown toggles on mobile
+    const dropdowns = document.querySelectorAll('.dropdown > a');
+    dropdowns.forEach(dropdown => {
+        dropdown.addEventListener('click', function(e) {
+            if (window.innerWidth <= 968) {
+                e.preventDefault();
+                const parent = this.parentElement;
+                parent.classList.toggle('active');
+            }
+        });
+    });
+}
+
+// ============================================
+// SMOOTH SCROLLING FOR ANCHOR LINKS - Fixed for dropdowns with 90px offset
+// ============================================
+function initSmoothScrolling() {
+    // Select all links that point to sections on the same page
+    // This includes dropdown links, nav links, and footer links
+    const links = document.querySelectorAll('a[href^="#"]:not([href="#"])');
+    
+    links.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            
+            if (targetElement) {
+                // Fixed offset for sticky nav - 90px to account for nav height + spacing
+                const navOffset = 90;
+                
+                // Calculate target position with offset
+                //const targetPosition = targetElement.offsetTop - navOffset;
+                const targetPosition = targetElement.getBoundingClientRect().top + window.scrollY - navOffset;
+                
+                // Smooth scroll to target
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
+                
+                // Update URL without jumping
+                history.pushState(null, null, targetId);
+                
+                // Close mobile menu if open (ensuring dropdown links work)
+                const navMenu = document.querySelector('.nav-menu');
+                const mobileToggle = document.querySelector('.mobile-toggle');
+                if (navMenu && navMenu.classList.contains('active')) {
+                    navMenu.classList.remove('active');
+                    if (mobileToggle) mobileToggle.textContent = '☰';
+                    document.body.style.overflow = '';
+                }
+            }
+        });
+    });
+}
+
+// ============================================
+// FAQ ACCORDION LOGIC - Robust toggle with proper class management
+// ============================================
+function initFaqAccordion() {
+    const faqQuestions = document.querySelectorAll('.faq-question');
+    
+    faqQuestions.forEach(question => {
+        question.addEventListener('click', function(e) {
+            e.preventDefault(); // Prevent any default button behavior
+            
+            // Get the current answer element (next sibling)
+            const answer = this.nextElementSibling;
+            
+            // Check if this FAQ is currently expanded
+            const isExpanded = this.getAttribute('aria-expanded') === 'true';
+            
+            // Toggle the current FAQ
+            if (!isExpanded) {
+                // Open this FAQ
+                this.setAttribute('aria-expanded', 'true');
+                this.classList.add('active');
+                answer.classList.add('active');
+                answer.style.maxHeight = answer.scrollHeight + 'px';
+                
+                // Update icon to minus
+                const icon = this.querySelector('.faq-icon');
+                if (icon) {
+                    icon.textContent = '−';
+                    icon.style.transform = 'rotate(0deg)';
+                }
+            } else {
+                // Close this FAQ
+                this.setAttribute('aria-expanded', 'false');
+                this.classList.remove('active');
+                answer.classList.remove('active');
+                answer.style.maxHeight = null;
+                
+                // Update icon to plus
+                const icon = this.querySelector('.faq-icon');
+                if (icon) {
+                    icon.textContent = '+';
+                    icon.style.transform = 'rotate(0deg)';
+                }
+            }
+        });
+    });
+    
+    // Set initial ARIA attributes and ensure answers are closed
+    faqQuestions.forEach(question => {
+        question.setAttribute('aria-expanded', 'false');
+        question.classList.remove('active');
+        const answer = question.nextElementSibling;
+        if (answer) {
+            answer.classList.remove('active');
+            answer.style.maxHeight = null;
+        }
+    });
+}
+
+// ============================================
+// SCROLL REVEAL ANIMATIONS (Intersection Observer)
+// ============================================
+function initScrollReveal() {
+    // Select all elements that should have reveal animation
+    const revealElements = document.querySelectorAll('.reveal');
+    
+    // If no elements found, add reveal class to common sections
+    if (revealElements.length === 0) {
+        document.querySelectorAll('section, .stat-box, .mission-card, .vision-card, .faq-item, .inclusivity-banner').forEach(el => {
+            el.classList.add('reveal');
+        });
+    }
+    
+    // Get updated list of reveal elements
+    const elementsToReveal = document.querySelectorAll('.reveal');
+    
+    // Create Intersection Observer with optimized thresholds
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('active');
+            }
+        });
+    }, {
+        threshold: 0.2,
+        rootMargin: '0px 0px -50px 0px'
+    });
+    
+    // Observe each element
+    elementsToReveal.forEach(element => {
+        observer.observe(element);
+    });
+}
+
+// ============================================
+// AUTOMATIC WEEKS COUNTER (Calculates from Jan 10, 2026)
+// ============================================
+function updateWeeksCounter() {
+    const weeksCounter = document.getElementById('weeks-counter');
+    if (!weeksCounter) return;
+    
+    // Set start date: January 10th, 2026 (Month is 0-indexed, so 0 = January)
+    const startDate = new Date(2026, 0, 10);
+    const currentDate = new Date();
+    
+    // Calculate difference in milliseconds
+    const timeDifference = currentDate - startDate;
+    
+    // Convert to weeks (milliseconds * seconds * minutes * hours * days)
+    const weeksPassed = Math.max(0, Math.floor(timeDifference / (1000 * 60 * 60 * 24 * 7)));
+    
+    // Display with plus sign (e.g., "12+")
+    weeksCounter.textContent = weeksPassed + '+';
+    
+    // Add a little animation to show it's live
+    weeksCounter.style.transform = 'scale(1.1)';
+    setTimeout(() => {
+        weeksCounter.style.transform = 'scale(1)';
+    }, 300);
+}
+
+// ============================================
+// TOTAL RUNNERS COUNTER (Animates on scroll)
+// ============================================
+function initStatsCounter() {
+    const statsSection = document.getElementById('stats');
+    const runnersCounter = document.getElementById('runners-counter');
+    
+    // Exit if elements don't exist
+    if (!statsSection || !runnersCounter) return;
+    
+    let hasCounted = false;
+    
+    // Create observer for stats section
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !hasCounted) {
+                hasCounted = true;
+                animateRunnersCounter();
+            }
+        });
+    }, {
+        threshold: 0.5 // Trigger when 50% of section is visible
+    });
+    
+    observer.observe(statsSection);
+    
+    // Animate runners counter from 0 to totalRunners
+    function animateRunnersCounter() {
+        const startValue = 0;
+        const endValue = totalRunners;
+        const duration = 2000; // 2 seconds
+        const startTime = performance.now();
+        
+        function updateCounter(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            // Easing function for smooth animation (easeOutQuart)
+            const easeOutQuart = 1 - Math.pow(1 - progress, 3);
+            
+            const currentValue = Math.floor(startValue + (endValue - startValue) * easeOutQuart);
+            
+            // Display with plus sign
+            runnersCounter.textContent = currentValue + '+';
+            
+            if (progress < 1) {
+                requestAnimationFrame(updateCounter);
+            } else {
+                // Ensure final value is exact
+                runnersCounter.textContent = endValue + '+';
+                
+                // Add energetic pop at the end
+                runnersCounter.style.transform = 'scale(1.2)';
+                setTimeout(() => {
+                    runnersCounter.style.transform = 'scale(1)';
+                }, 200);
+                
+                // Second little bounce for energy
+                setTimeout(() => {
+                    runnersCounter.style.transform = 'scale(1.1)';
+                    setTimeout(() => {
+                        runnersCounter.style.transform = 'scale(1)';
+                    }, 100);
+                }, 250);
+            }
+        }
+        
+        requestAnimationFrame(updateCounter);
+    }
+}
+
+// ============================================
+// IMAGE CAROUSEL - Seamless infinite loop
+// ============================================
+function initImageCarousel() {
+    const carousel = document.querySelector('.image-carousel');
+    const track = document.querySelector('.carousel-track');
+    
+    if (!carousel || !track) return;
+    
+    // Clone images for seamless loop
+    const images = Array.from(track.children);
+    const imageCount = images.length;
+    
+    // Clone first few images and append to end
+    for (let i = 0; i < Math.min(3, imageCount); i++) {
+        const clone = images[i].cloneNode(true);
+        clone.setAttribute('aria-hidden', 'true'); // Hide from screen readers
+        track.appendChild(clone);
+    }
+    
+    // Clone last few images and prepend to beginning
+    for (let i = imageCount - 1; i >= Math.max(0, imageCount - 3); i--) {
+        const clone = images[i].cloneNode(true);
+        clone.setAttribute('aria-hidden', 'true');
+        track.insertBefore(clone, track.firstChild);
+    }
+    
+    // Adjust animation duration based on number of images
+    const totalImages = track.children.length;
+    const baseDuration = 30; // seconds for 6 images
+    const duration = (totalImages / 6) * baseDuration;
+    
+    track.style.animation = `scroll ${duration}s linear infinite`;
+    
+    // Pause animation when not visible to save performance
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                track.style.animationPlayState = 'running';
+            } else {
+                track.style.animationPlayState = 'paused';
+            }
+        });
+    }, { threshold: 0.1 });
+    
+    observer.observe(carousel);
+}
+
+// ============================================
+// CALENDAR MOBILE VIEW - Optimize for small screens
+// ============================================
+function initCalendarMobileView() {
+    const calendarContainer = document.querySelector('.calendar-container');
+    const calendarIframe = calendarContainer ? calendarContainer.querySelector('iframe') : null;
+    
+    if (!calendarIframe) return;
+    
+    // Check if on mobile device
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+    
+    if (isMobile) {
+        // Get current src
+        let src = calendarIframe.src;
+        
+        // Switch to agenda view for better mobile readability
+        if (src.includes('calendar.google.com')) {
+            // Remove any existing view parameter and add agenda view
+            src = src.replace(/&mode=[^&]*/g, '');
+            src += '&mode=AGENDA';
+            
+            // Reduce height for mobile
+            calendarIframe.style.height = '400px';
+            
+            // Update iframe src
+            calendarIframe.src = src;
+        }
+    }
+    
+    // Add resize listener to switch views dynamically
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            const isMobileNow = window.innerWidth <= 768;
+            let src = calendarIframe.src;
+            
+            if (isMobileNow && src.includes('mode=AGENDA') === false) {
+                // Switch to agenda on mobile
+                src = src.replace(/&mode=[^&]*/g, '');
+                src += '&mode=AGENDA';
+                calendarIframe.src = src;
+                calendarIframe.style.height = '400px';
+            } else if (!isMobileNow && src.includes('mode=AGENDA')) {
+                // Switch back to default on desktop
+                src = src.replace(/&mode=AGENDA/g, '');
+                calendarIframe.src = src;
+                calendarIframe.style.height = '600px';
+            }
+        }, 250);
+    });
+}
+
+// ============================================
+// SCROLL TO TOP BUTTON
+// ============================================
+function initScrollToTop() {
+    // Create scroll to top button if it doesn't exist
+    if (!document.querySelector('.scroll-top-btn')) {
+        createScrollToTopButton();
+    }
+    
+    const scrollTopBtn = document.querySelector('.scroll-top-btn');
+    
+    if (!scrollTopBtn) return;
+    
+    // Show/hide button based on scroll position with throttle for performance
+    let ticking = false;
+    window.addEventListener('scroll', function() {
+        if (!ticking) {
+            window.requestAnimationFrame(function() {
+                if (window.scrollY > 400) {
+                    scrollTopBtn.classList.add('show');
+                } else {
+                    scrollTopBtn.classList.remove('show');
+                }
+                ticking = false;
+            });
+            ticking = true;
+        }
+    });
+    
+    // Scroll to top when clicked
+    scrollTopBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+}
+
+// Helper function to create scroll to top button
+function createScrollToTopButton() {
+    const btn = document.createElement('button');
+    btn.className = 'scroll-top-btn';
+    btn.innerHTML = '↑';
+    btn.setAttribute('aria-label', 'Scroll to top');
+    
+    // Style the button
+    btn.style.cssText = `
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: #FF8C00;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 24px;
+        font-weight: bold;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        z-index: 1999;
+        box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3);
+    `;
+    
+    // Add hover effect
+    btn.addEventListener('mouseenter', () => {
+        btn.style.transform = 'scale(1.1)';
+        btn.style.backgroundColor = '#FF6A00';
+    });
+    
+    btn.addEventListener('mouseleave', () => {
+        btn.style.transform = 'scale(1)';
+        btn.style.backgroundColor = '#FF8C00';
+    });
+    
+    document.body.appendChild(btn);
+}
+
+// ============================================
+// ADD REVEAL CLASS TO ELEMENTS (if missing)
+// ============================================
+// This runs after page load to ensure all elements can animate
+window.addEventListener('load', function() {
+    // Add reveal class to stat boxes if they don't have it
+    document.querySelectorAll('.stat-box').forEach(el => {
+        if (!el.classList.contains('reveal')) {
+            el.classList.add('reveal');
+        }
+    });
+    
+    // Add reveal class to mission and vision cards
+    document.querySelectorAll('.mission-card, .vision-card').forEach(el => {
+        if (!el.classList.contains('reveal')) {
+            el.classList.add('reveal');
+        }
+    });
+    
+    // Add reveal class to FAQ items
+    document.querySelectorAll('.faq-item').forEach(el => {
+        if (!el.classList.contains('reveal')) {
+            el.classList.add('reveal');
+        }
+    });
+    
+    // Add reveal class to sections
+    document.querySelectorAll('section').forEach(el => {
+        if (!el.classList.contains('reveal')) {
+            el.classList.add('reveal');
+        }
+    });
+    
+    // Add reveal class to carousel images
+    document.querySelectorAll('.carousel-track img').forEach(el => {
+        el.classList.add('reveal');
+    });
+    
+    // Add reveal class to inclusivity banner
+    const inclusivityBanner = document.querySelector('.inclusivity-banner');
+    if (inclusivityBanner && !inclusivityBanner.classList.contains('reveal')) {
+        inclusivityBanner.classList.add('reveal');
+    }
+    
+    // Re-initialize scroll reveal to catch new elements
+    initScrollReveal();
+    
+    // Update weeks counter again on load to ensure it's fresh
+    updateWeeksCounter();
+    
+    // Ensure FAQ accordion is properly initialized after load
+    //initFaqAccordion();
+});
+
+// ============================================
+// HANDLE WINDOW RESIZE
+// ============================================
+let resizeTimer;
+window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+        // Close mobile menu on resize if screen becomes large
+        if (window.innerWidth > 968) {
+            const navMenu = document.querySelector('.nav-menu');
+            const mobileToggle = document.querySelector('.mobile-toggle');
+            if (navMenu && mobileToggle) {
+                navMenu.classList.remove('active');
+                mobileToggle.textContent = '☰';
+                document.body.style.overflow = ''; // Restore scroll
+                
+                // Close any open dropdowns
+                document.querySelectorAll('.dropdown.active').forEach(dropdown => {
+                    dropdown.classList.remove('active');
+                });
+            }
+        }
+    }, 250);
+});
+
+// ============================================
+// UPDATE WEEKS COUNTER DAILY (Optional)
+// ============================================
+// Check once per day to update weeks counter
+setInterval(updateWeeksCounter, 86400000); // 24 hours in milliseconds
+
+// ============================================
+// ADD CSS FOR SCROLL-TO-TOP BUTTON
+// ============================================
+const style = document.createElement('style');
+style.textContent = `
+    .scroll-top-btn.show {
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+    
+    @media (max-width: 768px) {
+        .scroll-top-btn {
+            bottom: 90px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+        }
+    }
+`;
+document.head.appendChild(style);
