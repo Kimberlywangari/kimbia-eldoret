@@ -60,12 +60,21 @@ function initMobileMenu() {
     });
     
     // Close menu when ANY nav link is clicked (including dropdown links)
+    // Close menu only for regular links or sub-links, but keep open for dropdown parents
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
-            // Only close the menu if the link is NOT a dropdown toggle
-            if (!this.parentElement.classList.contains('dropdown')) {
-                closeMobileMenu();
+            // Check if the clicked link is a main category with a dropdown (e.g., "Our Tribe")
+            const isDropdownParent = this.parentElement.classList.contains('dropdown');
+            
+            // On mobile (968px or less), if clicking a parent category, 
+            // do NOT close the menu yet so the sub-menu can expand.
+            if (isDropdownParent && window.innerWidth <= 968) {
+                return; 
             }
+            
+            // For regular links (Home, Shop, Contact) OR sub-links (About Us, Rules),
+            // close the menu and navigate to the section.
+            closeMobileMenu();
         });
     });
     
@@ -482,7 +491,7 @@ function createScrollToTopButton() {
         width: 50px;
         height: 50px;
         border-radius: 50%;
-        background-color: #FF8C00;
+        background-color: #e65100;
         color: white;
         border: none;
         cursor: pointer;
@@ -498,12 +507,12 @@ function createScrollToTopButton() {
     // Add hover effect
     btn.addEventListener('mouseenter', () => {
         btn.style.transform = 'scale(1.1)';
-        btn.style.backgroundColor = '#FF6A00';
+        btn.style.backgroundColor = '#e65100';
     });
     
     btn.addEventListener('mouseleave', () => {
         btn.style.transform = 'scale(1)';
-        btn.style.backgroundColor = '#FF8C00';
+        btn.style.backgroundColor = '#e65100';
     });
     
     document.body.appendChild(btn);
