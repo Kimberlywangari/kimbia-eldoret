@@ -4,9 +4,9 @@
 :root {
     --black: #000000;
     --white: #FFFFFF;
-    --orange: #FF8C00;
+    --orange: #e65100;
     /* International Orange */
-    --orange-hover: #FF6A00;
+    --orange-hover: #e65100;
     /* Slightly darker for hover effects */
     --transparent-black: rgba(0, 0, 0, 0.9);
     --semi-transparent: rgba(0, 0, 0, 0.7);
@@ -66,7 +66,7 @@ h3::after {
     display: block;
     width: 60px;
     height: 3px;
-    background-color: var(--orange);
+    background-color: #e65100;
     margin: 10px auto 0;
     /* Auto margins ensure perfect centering */
     border-radius: 2px;
@@ -78,7 +78,7 @@ h1 {
 
 h2 {
     font-size: clamp(1.8rem, 4vw, 2.5rem);
-    color: var(--orange);
+    color: #e65100;
 }
 
 h3 {
@@ -170,7 +170,7 @@ section {
     left: 0;
     width: 0;
     height: 2px;
-    background-color: var(--orange);
+    background-color: #e65100;
     transition: width 0.3s ease;
 }
 
@@ -229,14 +229,14 @@ section {
 }
 
 .dropdown-content a:hover {
-    color: var(--orange);
+    color: #e65100;
 }
 
 /* ============================================ */
 /* JOIN US BUTTON (with pulse animation)
 /* ============================================ */
 .join-btn {
-    background-color: var(--orange);
+    background-color: black;
     color: var(--white) !important;
     padding: 8px 30px;
     border-radius: 50px;
@@ -247,14 +247,15 @@ section {
     transition: all 0.3s ease;
     animation: pulse 2s infinite;
     font-size: 0.9rem;
+    border-color:#e65100 ;
 }
 
-.join-btn:hover {
+/*.join-btn:hover {
     background-color: transparent;
-    border-color: var(--orange);
+    border-color: #e65100;
     color: var(--orange) !important;
     animation: none;
-}
+} */
 
 /* Pulse animation for Join Us button */
 @keyframes pulse {
@@ -277,7 +278,7 @@ section {
 .mobile-toggle {
     display: none;
     font-size: 2rem;
-    color: var(--orange);
+    color: #e65100;
     cursor: pointer;
 }
 
@@ -328,7 +329,7 @@ section {
 
 /* Main headline - Original size */
 #home h1:first-of-type {
-    color: var(--orange);
+    color: #e65100;
     font-weight: 800;
     text-transform: uppercase;
     font-size: clamp(2.5rem, 6vw, 4rem);
@@ -339,7 +340,7 @@ section {
 
 /* 'Your Tribe is Waiting' - Half size */
 #home h1:last-of-type {
-    color: var(--orange);
+    color: #e65100;
     font-weight: 600;
     text-transform: uppercase;
     font-size: clamp(1.5rem, 3vw, 2rem);
@@ -548,7 +549,7 @@ section {
 .counter {
     font-size: clamp(3rem, 6vw, 4rem);
     font-weight: 800;
-    color: var(--orange);
+    color: #e65100;
     line-height: 1.2;
     margin-top: 15px;
 }
@@ -651,7 +652,7 @@ section {
     height: 200px;
     object-fit: cover;
     border-radius: 10px;
-    border: 2px solid var(--orange);
+    border: 2px solid var(--white);
     transition: transform 0.3s ease;
     flex-shrink: 0;
 }
@@ -731,27 +732,28 @@ section {
 }
 
 .whatsapp-btn {
-    background-color: var(--whatsapp-green);
-    color: var(--white);
+    background-color: var(--black);
+    color: #FFFFFF;
+    border-color: var(--whatsapp-green);
 }
 
 .whatsapp-btn:hover {
-    background-color: transparent;
-    border-color: var(--whatsapp-green);
+    
     color: var(--whatsapp-green);
 }
 
 .strava-btn {
-    background-color: #FC4C02;
+    background-color: #000000;
+    border-color: #e65100;
     /* Strava orange */
-    color: var(--white);
+    color: #FFFFFF;
 }
 
-.strava-btn:hover {
+/*.strava-btn:hover {
     background-color: transparent;
     border-color: #FC4C02;
     color: #FC4C02;
-}
+}*/
 
 .strava-description {
     text-align: center;
