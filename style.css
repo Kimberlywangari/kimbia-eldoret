@@ -247,15 +247,8 @@ section {
     transition: all 0.3s ease;
     animation: pulse 2s infinite;
     font-size: 0.9rem;
-    border-color:#e65100 ;
-}
-
-/*.join-btn:hover {
-    background-color: transparent;
     border-color: #e65100;
-    color: var(--orange) !important;
-    animation: none;
-} */
+}
 
 /* Pulse animation for Join Us button */
 @keyframes pulse {
@@ -369,6 +362,7 @@ section {
     background: linear-gradient(45deg, rgba(0, 0, 0, 0.95), rgba(255, 140, 0, 0.05));
     padding-bottom: 100px;
 }
+
 /* Center text for About Us and Rules */
 #about-us p,
 #rules ul {
@@ -379,6 +373,7 @@ section {
     list-style-position: inside;
     /* Ensures bullet points stay attached to the centered text */
 }
+
 /* Using !important to override any hidden conflicts */
 #community p,
 #runs #weekly-schedule p,
@@ -391,6 +386,7 @@ section {
     display: block;
     width: 100%;
 }
+
 /* ============================================ */
 /* MISSION & VISION GRID
 /* ============================================ */
@@ -560,23 +556,226 @@ section {
     font-weight: 600;
 }
 
-
 /* ============================================ */
-/* EVENTS SECTION - Styling for events list
+/* POWERED BY SECTION - Minimalist high-end styling
 /* ============================================ */
-.events-list {
-    list-style: none;
-    padding: 0;
+.powered-by-section {
+    margin: 60px 0 40px;
     text-align: center;
 }
 
-.events-list li {
+.powered-by-section h4 {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 25px;
+    font-weight: 500;
+}
+
+/* ============================================ */
+/* SPONSOR LOOP CONTAINER - Infinite scrolling logos
+/* ============================================ */
+.sponsor-loop-container {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    margin: 20px 0;
+    padding: 20px 0;
+}
+
+.sponsor-loop-container::before,
+.sponsor-loop-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 100px;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.sponsor-loop-container::before {
+    left: 0;
+    background: linear-gradient(to right, var(--black), transparent);
+}
+
+.sponsor-loop-container::after {
+    right: 0;
+    background: linear-gradient(to left, var(--black), transparent);
+}
+
+.sponsor-track {
+    display: flex;
+    gap: 40px;
+    animation: sponsorScroll 25s linear infinite;
+    width: fit-content;
+}
+
+/* Pause animation on hover */
+.sponsor-loop-container:hover .sponsor-track {
+    animation-play-state: paused;
+}
+
+/* Sponsor logo styling - Grayscale by default, color on hover */
+.sponsor-logo {
+    width: 120px;
+    height: auto;
+    max-height: 80px;
+    object-fit: contain;
+    filter: grayscale(100%);
+    opacity: 0.7;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.sponsor-logo:hover {
+    filter: grayscale(0%);
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+/* Sponsor infinite scroll animation */
+@keyframes sponsorScroll {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(calc(-120px * 4 - 120px));
+        /* Adjust based on number of logos */
+    }
+}
+
+/* ============================================ */
+/* EVENTS SECTION - Glassmorphism Event Cards with Grid Layout
+/* ============================================ */
+#events {
+    padding: 40px 0;
+    /* Reduced padding for zero-event state */
+}
+
+#events:empty {
+    display: none;
+    /* Hide section when no content */
+}
+
+#events .container {
+    position: relative;
+}
+
+/* Featured Event Container - Grid Layout */
+.featured-event-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin: 30px auto;
+    max-width: 800px;
+    /* Limits to max 2 cards per row on larger screens */
+}
+
+/* Glassmorphism Event Card */
+.event-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(230, 81, 0, 0.3);
+    border-radius: 16px;
+    padding: 24px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Inner glow effect */
+.event-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 16px;
+    box-shadow: inset 0 0 20px rgba(230, 81, 0, 0.2);
+    pointer-events: none;
+}
+
+.event-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--orange);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.event-card:hover::before {
+    box-shadow: inset 0 0 30px rgba(230, 81, 0, 0.3);
+}
+
+/* Event card typography */
+.event-card h3 {
+    color: var(--orange);
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+    text-align: left;
+}
+
+.event-card h3::after {
+    margin: 10px 0 0;
+    width: 40px;
+}
+
+.event-card .event-date {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
     margin-bottom: 15px;
-    font-size: 1.2rem;
-    padding: 10px;
-    background-color: rgba(255, 140, 0, 0.05);
-    border-radius: 8px;
-    border-left: 4px solid var(--orange);
+    display: inline-block;
+    padding: 4px 12px;
+    background: rgba(230, 81, 0, 0.2);
+    border-radius: 20px;
+}
+
+.event-card .event-description {
+    color: var(--white);
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.event-card .event-location {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Featured event specific styles - now part of grid */
+.featured-event-container .event-card {
+    /* All cards use the same grid styling */
+    border: 1px solid rgba(230, 81, 0, 0.3);
+    max-width: none;
+    margin: 0;
+}
+
+.featured-event-container .event-card:hover {
+    border-color: var(--orange);
+}
+
+.featured-event-container .event-card h3 {
+    font-size: 1.5rem;
+}
+
+.featured-event-container .event-card .event-date {
+    font-size: 0.9rem;
+}
+
+/* Empty state styling */
+.featured-event-container:empty::after {
+    content: 'No events at the moment. Check back soon!';
+    display: block;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 40px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    border: 1px solid rgba(230, 81, 0, 0.2);
 }
 
 /* ============================================ */
@@ -738,7 +937,6 @@ section {
 }
 
 .whatsapp-btn:hover {
-    
     color: var(--whatsapp-green);
 }
 
@@ -749,19 +947,12 @@ section {
     color: #FFFFFF;
 }
 
-/*.strava-btn:hover {
-    background-color: transparent;
-    border-color: #FC4C02;
-    color: #FC4C02;
-}*/
-
 .strava-description {
     text-align: center;
     margin-top: 20px;
     color: rgba(255, 255, 255, 0.8);
     font-size: 0.9rem;
 }
-
 
 /* ============================================ */
 /* REVEAL ANIMATION CLASS (for scroll effects)
@@ -941,6 +1132,7 @@ footer {
         /* Ensure clicks work on mobile */
     }
 
+    /* IMPORTANT: Ensure dropdown content is visible when parent has active class */
     .dropdown.active .dropdown-content {
         display: block;
     }
@@ -952,6 +1144,25 @@ footer {
     .footer-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 30px;
+    }
+
+    /* Sponsor loop mobile */
+    .sponsor-logo {
+        width: 80px;
+        max-height: 60px;
+    }
+
+    @keyframes sponsorScroll {
+        100% {
+            transform: translateX(calc(-80px * 4 - 80px));
+        }
+    }
+
+    /* Event cards mobile - responsive grid */
+    .featured-event-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        max-width: 100%;
     }
 }
 
@@ -978,9 +1189,6 @@ footer {
     section {
         padding: 40px 0;
     }
-
-    
-
 
     /* Hero mobile adjustment */
     .hero-content {
@@ -1058,6 +1266,27 @@ footer {
     .image-carousel::before,
     .image-carousel::after {
         width: 50px;
+    }
+
+    /* Powered by section mobile */
+    .powered-by-section h4 {
+        font-size: 0.7rem;
+        letter-spacing: 2px;
+    }
+
+    .sponsor-logo {
+        width: 70px;
+        max-height: 50px;
+    }
+
+    .sponsor-track {
+        gap: 25px;
+    }
+
+    @keyframes sponsorScroll {
+        100% {
+            transform: translateX(calc(-70px * 4 - 75px));
+        }
     }
 
     /* Footer */
