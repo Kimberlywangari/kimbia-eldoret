@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-7h@242ic#qsxod#i-6aa3*fd@-6a!)6w^aj@=4w+q@gkd@2@l0')
            
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['kimbia-eldoret.onrender.com', 'localhost', '127.0.0.1']
 
