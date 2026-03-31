@@ -13,7 +13,7 @@ const kimbiaEvents = [
     },
     {
         id: 2,
-        date: "2026-03-28", // Future Event - Next Saturday
+        date: "2025-03-28", // Future Event - Next Saturday
         title: "Eldoret Morning Run",
         description: "Join us for a refreshing morning run through Eldoret's scenic routes. All paces welcome!",
         location: "Rupa's Mall, Eldoret",
@@ -22,7 +22,7 @@ const kimbiaEvents = [
     },
     {
         id: 3,
-        date: "2026-04-04", // Future Event
+        date: "2025-04-04", // Future Event
         title: "Fauna and Kimmy Run",
         description: "Come cheer for our talented runners! Fauna will be running the 10K, while Kimmy takes on the half marathon. Let's show our support!",
         location: "Naiorbi city",
@@ -54,9 +54,10 @@ document.addEventListener('DOMContentLoaded', function () {
     initImageCarousel();
     initCalendarMobileView();
     initFaqAccordion();
-    initEventRendering(); // NEW: Render events from JSON
-    initSponsorLoop(); // Initialize sponsor infinite loop
-    updateWeeksCounter(); // Calculate weeks from Jan 10, 2026
+    initEventRendering();
+    initSponsorLoop();
+    initFormHandlers(); // NEW: Initialize form handlers
+    updateWeeksCounter();
 });
 
 // ============================================
@@ -219,23 +220,30 @@ function initSponsorLoop() {
 }
 
 // ============================================
-// MOBILE MENU LOGIC - Updated for dropdown toggle
+// MOBILE MENU LOGIC - Enhanced dropdown toggle
 // ============================================
 function initMobileMenu() {
     const mobileToggle = document.querySelector('.mobile-toggle');
     const navMenu = document.querySelector('.nav-menu');
-    const navLinks = document.querySelectorAll('.nav-menu a');
+    const dropdownParents = document.querySelectorAll('.dropdown > a');
 
     // Only run if elements exist
     if (!mobileToggle || !navMenu) return;
 
-    // Function to close mobile menu
+    // Function to close mobile menu and all dropdowns
     const closeMobileMenu = () => {
         navMenu.classList.remove('active');
         mobileToggle.textContent = '☰';
         document.body.style.overflow = ''; // Restore scroll
 
-        // Also close any open dropdowns
+        // Close all open dropdowns
+        document.querySelectorAll('.dropdown.active').forEach(dropdown => {
+            dropdown.classList.remove('active');
+        });
+    };
+
+    // Function to close all dropdowns
+    const closeAllDropdowns = () => {
         document.querySelectorAll('.dropdown.active').forEach(dropdown => {
             dropdown.classList.remove('active');
         });
@@ -251,25 +259,53 @@ function initMobileMenu() {
 
         // Prevent body scroll when menu is open
         document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+        
+        // Close all dropdowns when opening/closing menu
+        if (!navMenu.classList.contains('active')) {
+            closeAllDropdowns();
+        }
     });
 
-    // Close menu when any regular nav link is clicked (not dropdown parents on mobile)
-    navLinks.forEach(link => {
-        link.addEventListener('click', function (e) {
-            // Check if the clicked link is a main category with a dropdown (e.g., "Our Tribe")
-            const isDropdownParent = this.parentElement.classList.contains('dropdown');
-
-            // On mobile (968px or less), if clicking a parent category, 
-            // toggle the dropdown instead of closing the menu
-            if (isDropdownParent && window.innerWidth <= 968) {
-                e.preventDefault();
-                const parent = this.parentElement;
-                parent.classList.toggle('active');
-                return; // Don't close the menu
+    // Handle dropdown parent clicks on mobile
+    dropdownParents.forEach(parentLink => {
+        parentLink.addEventListener('click', function (e) {
+            if (window.innerWidth <= 968) {
+                e.preventDefault(); // Prevent navigation
+                e.stopPropagation();
+                
+                const parentLi = this.parentElement;
+                
+                // Toggle active class on the parent li
+                parentLi.classList.toggle('active');
+                
+                // Close other dropdowns (optional: keep only one open at a time)
+                dropdownParents.forEach(otherLink => {
+                    const otherParent = otherLink.parentElement;
+                    if (otherParent !== parentLi && otherParent.classList.contains('active')) {
+                        otherParent.classList.remove('active');
+                    }
+                });
             }
+        });
+    });
 
-            // For regular links (Home, Shop, Contact) OR sub-links (About Us, Rules),
-            // close the menu and navigate to the section.
+    // Handle sub-menu links (actual navigation links)
+    const subMenuLinks = document.querySelectorAll('.dropdown-content a');
+    subMenuLinks.forEach(link => {
+        link.addEventListener('click', function (e) {
+            if (window.innerWidth <= 968) {
+                // Let the link navigate, but close the menu after
+                setTimeout(() => {
+                    closeMobileMenu();
+                }, 100);
+            }
+        });
+    });
+
+    // Handle regular nav links (non-dropdown)
+    const regularLinks = document.querySelectorAll('.nav-menu > li:not(.dropdown) > a');
+    regularLinks.forEach(link => {
+        link.addEventListener('click', function () {
             closeMobileMenu();
         });
     });
@@ -280,26 +316,74 @@ function initMobileMenu() {
             closeMobileMenu();
         }
     });
+}
 
-    // Handle dropdown toggles on mobile (alternative method)
-    const dropdowns = document.querySelectorAll('.dropdown > a');
-    dropdowns.forEach(dropdown => {
-        dropdown.addEventListener('click', function (e) {
-            if (window.innerWidth <= 968) {
-                e.preventDefault();
-                const parent = this.parentElement;
-                parent.classList.toggle('active');
+// ============================================
+// FORM HANDLERS - Smooth scroll and validation
+// ============================================
+function initFormHandlers() {
+    // Handle collaboration form submission
+    const collabForm = document.querySelector('.collab-form');
+    if (collabForm) {
+        collabForm.addEventListener('submit', function(e) {
+            // Don't prevent default - let Django handle submission
+            // But we can add smooth scroll to success message if needed
+            
+            // Optional: Add loading state
+            const submitBtn = this.querySelector('.collab-submit-btn');
+            if (submitBtn) {
+                submitBtn.textContent = 'Sending...';
+                submitBtn.disabled = true;
+                setTimeout(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Send Proposal';
+                }, 3000);
+            }
+        });
+    }
+
+    // Handle feedback form submission
+    const feedbackForm = document.querySelector('.feedback-form');
+    if (feedbackForm) {
+        feedbackForm.addEventListener('submit', function(e) {
+            // Don't prevent default - let Django handle submission
+            
+            // Optional: Add loading state
+            const submitBtn = this.querySelector('.feedback-btn');
+            if (submitBtn) {
+                submitBtn.textContent = 'Submitting...';
+                submitBtn.disabled = true;
+                setTimeout(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Submit Feedback';
+                }, 3000);
+            }
+        });
+    }
+
+    // Add smooth scroll to form when coming from "Partner with Us" links
+    const partnerLinks = document.querySelectorAll('a[href="#collaboration"]');
+    partnerLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const collaborationSection = document.getElementById('collaboration');
+            if (collaborationSection) {
+                const navOffset = 90;
+                const targetPosition = collaborationSection.getBoundingClientRect().top + window.scrollY - navOffset;
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
             }
         });
     });
 }
 
 // ============================================
-// SMOOTH SCROLLING FOR ANCHOR LINKS - Fixed for dropdowns with 90px offset
+// SMOOTH SCROLLING FOR ANCHOR LINKS - Enhanced with offset
 // ============================================
 function initSmoothScrolling() {
     // Select all links that point to sections on the same page
-    // This includes dropdown links, nav links, and footer links
     const links = document.querySelectorAll('a[href^="#"]:not([href="#"])');
 
     links.forEach(link => {
@@ -332,7 +416,7 @@ function initSmoothScrolling() {
                 // Update URL without jumping
                 history.pushState(null, null, targetId);
 
-                // Close mobile menu if open (ensuring dropdown links work)
+                // Close mobile menu if open
                 const navMenu = document.querySelector('.nav-menu');
                 const mobileToggle = document.querySelector('.mobile-toggle');
                 if (navMenu && navMenu.classList.contains('active')) {

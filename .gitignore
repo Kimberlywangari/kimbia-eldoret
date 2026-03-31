@@ -1,0 +1,54 @@
+# ========================================
+# Python & Django Core
+# ========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+
+# ========================================
+# Environments & Secrets (CRITICAL)
+# ========================================
+# Never commit your virtual environments or secret keys!
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+secrets.json
+
+# ========================================
+# Database
+# ========================================
+# Keeps your local test database out of the repo
+db.sqlite3
+db.sqlite3-journal
+
+# ========================================
+# Django User Uploads & Static Files
+# ========================================
+# Ignore media uploads and collected static files
+media/
+staticfiles/
+assets/
+
+# ========================================
+# OS Generated Files
+# ========================================
+.DS_Store
+.DS_Store?
+._*
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ========================================
+# IDEs and Editors
+# ========================================
+.vscode/
+.idea/
+*.swp
+*.swo

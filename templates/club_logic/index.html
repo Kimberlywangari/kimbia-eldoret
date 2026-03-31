@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kimbia Eldoret | Running Club</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <!-- Font Awesome for social media icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -20,7 +21,7 @@
             <!-- Logo replaced with image -->
             <div class="logo">
                 <a href="#home">
-                    <img src="logo.png" alt="Kimbia Eldoret Logo" class="logo-img">
+                    <img src="{% static 'img/logo/logo.png' %}" alt="Kimbia Eldoret Logo" class="logo-img">
                 </a>
             </div>
 
@@ -49,6 +50,7 @@
                 <li><a href="#collaboration">Collaboration</a></li>
                 <li><a href="#shop">Shop</a></li>
                 <li><a href="#contact">Contact</a></li>
+                <li><a href="#feedback">Feedback</a></li>
             </ul>
 
             <a href="https://www.instagram.com/kimbiaeldoret" target="_blank" class="join-btn">Join Us</a>
@@ -63,7 +65,7 @@
     <section id="home">
         <!-- Video Background -->
         <video autoplay muted loop playsinline class="hero-video">
-            <source src="hero-video.mp4" type="video/mp4">
+            <source src="{% static 'video/hero-video.mp4' %}" type="video/mp4">
             <!-- Fallback text if video doesn't load -->
             Your browser does not support the video tag.
         </video>
@@ -78,8 +80,6 @@
             <p class="hero-subheadline">From your first 2KM walk to your fastest 10KM run, we move as one.</p>
         </div>
     </section>
-
-
 
     <!-- ============================================ -->
     <!-- OUR TRIBE SECTION
@@ -219,11 +219,16 @@
                     <div class="sponsor-track">
                         <!-- Sponsor logos will be dynamically populated by JavaScript -->
                         <!-- Placeholder structure - JS will clone these -->
-                        <img src="sponsor1.png" alt="Sponsor 1" class="sponsor-logo" loading="lazy">
-                        <img src="sponsor2.png" alt="Sponsor 2" class="sponsor-logo" loading="lazy">
-                        <img src="sponsor3.png" alt="Sponsor 3" class="sponsor-logo" loading="lazy">
-                        <img src="sponsor4.png" alt="Sponsor 4" class="sponsor-logo" loading="lazy">
-                        <img src="sponsor5.png" alt="Sponsor 5" class="sponsor-logo" loading="lazy">
+                        <img src="{% static 'sponsors/sponsor1.png' %}" alt="Sponsor 1" class="sponsor-logo"
+                            loading="lazy">
+                        <img src="{% static 'sponsors/sponsor2.png' %}" alt="Sponsor 2" class="sponsor-logo"
+                            loading="lazy">
+                        <img src="{% static 'sponsors/sponsor3.png' %}" alt="Sponsor 3" class="sponsor-logo"
+                            loading="lazy">
+                        <img src="{% static 'sponsors/sponsor4.png' %}" alt="Sponsor 4" class="sponsor-logo"
+                            loading="lazy">
+                        <img src="{% static 'sponsors/sponsor5.png' %}" alt="Sponsor 5" class="sponsor-logo"
+                            loading="lazy">
                     </div>
                 </div>
             </div>
@@ -255,26 +260,76 @@
             <!-- Image Carousel for community photos -->
             <div class="image-carousel">
                 <div class="carousel-track">
-                    <img src="run1.jpeg" alt="Kimbia Eldoret community run 1" loading="lazy">
-                    <img src="run2.jpeg" alt="Kimbia Eldoret community run 2" loading="lazy">
-                    <img src="run3.jpeg" alt="Kimbia Eldoret community run 3" loading="lazy">
-                    <img src="run4.jpeg" alt="Kimbia Eldoret community run 4" loading="lazy">
-                    <img src="run5.jpeg" alt="Kimbia Eldoret community run 5" loading="lazy">
-                    <img src="run6.jpeg" alt="Kimbia Eldoret community run 6" loading="lazy">
+                    <img src="{% static 'gallery/run1.jpeg' %}" alt="Kimbia Eldoret community run 1" loading="lazy">
+                    <img src="{% static 'gallery/run2.jpeg' %}" alt="Kimbia Eldoret community run 2" loading="lazy">
+                    <img src="{% static 'gallery/run3.jpeg' %}" alt="Kimbia Eldoret community run 3" loading="lazy">
+                    <img src="{% static 'gallery/run4.jpeg' %}" alt="Kimbia Eldoret community run 4" loading="lazy">
+                    <img src="{% static 'gallery/run5.jpeg' %}" alt="Kimbia Eldoret community run 5" loading="lazy">
+                    <img src="{% static 'gallery/run6.jpeg' %}" alt="Kimbia Eldoret community run 6" loading="lazy">
+                    <img src="{% static 'gallery/run7.jpeg' %}" alt="Kimbia Eldoret community run 7" loading="lazy">
                 </div>
             </div>
         </div>
     </section>
 
     <!-- ============================================ -->
-    <!-- COLLABORATION SECTION with Email Link
+    <!-- COLLABORATION SECTION with Email Link and Form
     /* ============================================ -->
     <section id="collaboration">
         <div class="container">
-            <h2>Collaboration</h2>
-            <p>For partnerships and collaborations, email us at
-                <a href="mailto:kimbiaeldoret@gmail.com" class="email-link">kimbiaeldoret@gmail.com</a>.
-            </p>
+            <h2>Partner With the Tribe</h2>
+            <p class="collab-intro">Join us in building a healthier, more active Eldoret.</p>
+
+            <form method="POST" action="" class="collab-form">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <input type="text" name="organization_name" placeholder="Organization Name" required>
+                </div>
+
+                <div class="form-group">
+                    <input type="url" name="website_link" placeholder="Website or Social Media Link (https://...)"
+                        pattern="https?://.*" title="Please enter a valid URL starting with http:// or https://">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="industry" class="form-label">Industry Category</label>
+                        <select name="industry" id="industry" required>
+                            <option value="" disabled selected>Select Category</option>
+                            <option value="health">Health & Wellness</option>
+                            <option value="sports">Sports Apparel & Gear</option>
+                            <option value="nutrition">Nutrition & Supplements</option>
+                            <option value="local">Local Eldoret Business</option>
+                            <option value="tech">Tech & Fitness Apps</option>
+                            <option value="media">Media & Content Creation</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="collaboration_type" class="form-label">Collaboration Type</label>
+                        <select name="collaboration_type" id="collaboration_type" required>
+                            <option value="" disabled selected>How can we work together?</option>
+                            <option value="sponsor">Event Sponsorship</option>
+                            <option value="partner">Community Partnership</option>
+                            <option value="brand">Brand Ambassadorship</option>
+                            <option value="gear">Gear/Product Testing</option>
+                            <option value="media">Media Coverage</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <input type="email" name="org_email" placeholder="Organization Email Address" required>
+                </div>
+
+                <div class="form-group">
+                    <textarea name="proposal" placeholder="Tell us about your proposal..." rows="5" required></textarea>
+                </div>
+
+                <button type="submit" class="collab-submit-btn">Send Proposal</button>
+            </form>
         </div>
     </section>
 
@@ -287,7 +342,27 @@
             <p>Official Kimbia merch coming soon! (T‑shirts, caps, and more)</p>
         </div>
     </section>
-
+    <!-- ============================================ -->
+    <!-- FEEDBACK SECTION
+        /* ============================================ -->
+    <section id="feedback" class="feedback-section">
+        <div class="container">
+            <div class="feedback-card">
+                <div class="feedback-content">
+                    <h2>Leave a Feedback</h2>
+                    <p>Help the tribe grow! Share your thoughts or suggestions with us.</p>
+                </div>
+    
+                <form action="{% url 'leave_feedback' %}" method="POST" class="feedback-form">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <textarea name="message" placeholder="What's on your mind?..." required></textarea>
+                    </div>
+                    <button type="submit" class="feedback-btn">Submit Feedback</button>
+                </form>
+            </div>
+        </div>
+    </section>
     <!-- ============================================ -->
     <!-- CONTACT SECTION - Updated with WhatsApp & Strava
     /* ============================================ -->
@@ -311,6 +386,8 @@
         </div>
     </section>
 
+    
+
     <!-- ============================================ -->
     <!-- MODERN FOOTER - Three Column Grid with FontAwesome Icons
     /* ============================================ -->
@@ -319,7 +396,7 @@
             <div class="footer-grid">
                 <!-- Column 1: Logo and Vision -->
                 <div class="footer-col">
-                    <img src="logo.png" alt="Kimbia Eldoret" class="footer-logo">
+                    <img src="{% static 'img/logo/logo.png' %}" alt="Kimbia Eldoret" class="footer-logo">
                     <p class="footer-vision">A city where running and walking together strengthens health and
                         relationships.</p>
                 </div>
@@ -331,6 +408,9 @@
                         <li><a href="#home">Home</a></li>
                         <li><a href="#our-tribe">Tribe</a></li>
                         <li><a href="#runs">Runs</a></li>
+                        <li><a href="#events">Events</a></li>
+                        <li><a href="#community">Community</a></li>
+                        <li><a href="#shop">Shop</a></li>
                     </ul>
                 </div>
 
@@ -359,7 +439,7 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="{% static 'js/script.js' %}"></script>
 </body>
 
 </html>
